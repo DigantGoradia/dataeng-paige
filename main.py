@@ -49,3 +49,12 @@ try:
                     )
 except Exception as e:
     pass
+
+# Calculate glucose averages, where values is missing NaN will be result in answer
+df['avg_glucose'] = df[['glucose_test_1', 'glucose_test_2', 'glucose_test_3']].mean(axis=1, skipna=False)
+
+# Remove any rows with NaN values in glucose average value.
+# Create new DataFrame of removed rows and store it into csv file 
+# for processing it next day.
+missing_data_df = df[df['avg_glucose'].isnull()]
+missing_data_df.reset_index(drop=True, inplace=True)
