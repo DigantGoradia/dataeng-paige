@@ -10,6 +10,13 @@ if not os.path.exists(RESULT_DIR):
 if not os.path.exists(MISSING_DATA_DIR):
 	os.mkdir(MISSING_DATA_DIR)
 
+def getSugarLevel(row):
+	if row['avg_glucose'] <= 140:
+		return 'normal'
+	elif row['avg_glucose'] > 140 and row['avg_glucose'] < 199:
+		return 'prediabetes'
+	return 'diabetes'
+
 '''
 #   S3 bucket name is required for pulling csv file from.
 
@@ -58,3 +65,13 @@ df['avg_glucose'] = df[['glucose_test_1', 'glucose_test_2', 'glucose_test_3']].m
 # for processing it next day.
 missing_data_df = df[df['avg_glucose'].isnull()]
 missing_data_df.reset_index(drop=True, inplace=True)
+
+# Drop PHI Informations including name, email & address
+df.drop(['first_name', 'last_name', 'email', 'address'], axis=1, inplace=True)
+
+# Drop the NaN average glucose values
+df.dropna(subset = ['avg_glucose'], inplace=True)
+df.reset_index(drop=True, inplace=True)
+
+# Get the sugar level and add new column to DataFrame
+df['sugar_level'] = df.apply(getSugarLevel, axis=1)
