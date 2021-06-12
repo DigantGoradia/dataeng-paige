@@ -1,6 +1,8 @@
 import os
 import datetime
 import pandas as pd
+import logging
+import sys
 
 RESULT_DIR = 'results'
 MISSING_DATA_DIR = 'missing_data'
@@ -17,7 +19,28 @@ def getSugarLevel(row):
 		return 'prediabetes'
 	return 'diabetes'
 
+def initializeLogger():
+	logger = logging.getLogger()
+	logger.setLevel(logging.INFO)
+
+	console_handler = logging.StreamHandler(sys.stdout)
+	console_handler.setLevel(logging.DEBUG)
+	formatter = logging.Formatter('[%(levelname)s] %(asctime)s - %(message)s')
+	console_handler.setFormatter(formatter)
+
+	file_handler = logging.FileHandler('logs.txt')
+	file_handler.setLevel(logging.INFO)
+	file_handler.setFormatter(formatter)
+
+	logger.addHandler(console_handler)
+	logger.addHandler(file_handler)
+
+	return logger
+
 def main():
+    logger = initializeLogger()
+    logger.info('ETL script has started.')
+
     '''
     #   S3 bucket name is required for pulling csv file from.
 
@@ -56,7 +79,7 @@ def main():
                         names=['patient_id', 'first_name', 'last_name', 'email', 'address', 'glucose_test_1', 'glucose_test_2', 'glucose_test_3', 'cancer_present', 'atrophy_present']
                         )
     except Exception as e:
-        pass
+        logger.error(e)
 
     #Try to read previous day data if exists
     try:
@@ -72,6 +95,7 @@ def main():
             previous_day_df.set_index('patient_id')
             df.update(previous_day_df)
     except:
+        logger.info(f'Previous day\'s({str_prevous_date}) missing data is not available. proceeding for today\'s({str_file_date}) data.')
         pass
 
     # Calculate glucose averages, where values is missing NaN will be result in answer
@@ -98,12 +122,14 @@ def main():
                 sep=',',
                 index=False
     )
+    logger.info(f'missing data for {str_file_date} has been saved to csv.')
 
     # Create result file containing the actual output of ETL pipeline
     df.to_csv(f'{RESULT_DIR}/{str_file_date}_result.csv',
                 sep=',',
                 index=False
     )
+    logger.info(f'data is processed for {str_file_date}')
 
 if __name__ == '__main__':
     main()
