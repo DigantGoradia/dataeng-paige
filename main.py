@@ -57,6 +57,22 @@ try:
 except Exception as e:
     pass
 
+#Try to read previous day data if exists
+try:
+    previous_date = file_date - datetime.timedelta(days=1)
+    str_prevous_date = previous_date.strftime('%Y-%m-%d')
+
+    previous_day_df = pd.read_csv(f'{MISSING_DATA_DIR}/{str_prevous_date}_missing_data.csv',
+                            delimiter=',',
+                            encoding='ISO-8859-1'
+                    )
+    
+    if previous_day_df is not None:
+        previous_day_df.set_index('patient_id')
+        df.update(previous_day_df)
+except:
+    pass
+
 # Calculate glucose averages, where values is missing NaN will be result in answer
 df['avg_glucose'] = df[['glucose_test_1', 'glucose_test_2', 'glucose_test_3']].mean(axis=1, skipna=False)
 
