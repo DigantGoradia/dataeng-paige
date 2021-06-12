@@ -75,3 +75,15 @@ df.reset_index(drop=True, inplace=True)
 
 # Get the sugar level and add new column to DataFrame
 df['sugar_level'] = df.apply(getSugarLevel, axis=1)
+
+# Create new file for missing data to process next day
+missing_data_df.to_csv(f'{MISSING_DATA_DIR}/{str_file_date}_missing_data.csv',
+			sep=',',
+			index=False
+	)
+
+# Create result file containing the actual output of ETL pipeline
+df.to_csv(f'{RESULT_DIR}/{str_file_date}_result.csv',
+			sep=',',
+			index=False
+	)
