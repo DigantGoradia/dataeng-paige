@@ -8,11 +8,14 @@ An ETL script to transform the data per requirement and store it for the future 
 5. The logs of the ETL pipeline will be stored in `logs.log` file, so user can see the logs anytime regardless of monitoring it.
 ## Prerequisites
 To install dependecies, please run the following command in the terminal
+
 ```pip install -r requirements.txt```
 ## Usage
 To start the ETL script, run the following command
+
 ```python main.py```
 
 ## Testing
 `pytest` is used to test the developed functions in the script. This unit-testing script tests the basic user-defined functions developed in the script. To start the testing, please run the following command in the terminal. This will automatically target the test script and executes it.
+
 ```pytest```
