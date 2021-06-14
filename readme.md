@@ -26,3 +26,16 @@ python main.py
 ```bash
 pytest
 ```
+
+## CronTab
+Running ETL script in endless mode can be achieved by setting up a cron-job in a system & setting up this script to run periodically. This can be achieved by running following command in the terminal.
+
+```bash
+crontab -e 
+```
+
+Select the editor of your choice. Add the command that you want to execute from cron and save that file.
+
+```bash
+0 9 * * * python ./main.py
+```
